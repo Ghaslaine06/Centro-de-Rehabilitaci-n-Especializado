@@ -1,0 +1,31 @@
+<script>
+async function login() {
+    const nombre_usuario = document.getElementById('nombre_usuario').value;
+    const contrasena = document.getElementById('contrasena').value;
+    const mensajeDiv = document.getElementById('mensaje');
+    mensajeDiv.textContent = '';
+    mensajeDiv.className = '';
+
+    try {
+        const res = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ nombre: nombre_usuario, contrasena })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            mensajeDiv.textContent = `¡Hola, ${data.nombre}! Redirigiendo...`;
+            mensajeDiv.className = 'success';
+            setTimeout(() => {
+                window.location.href = `dashboard.html?nombre=${encodeURIComponent(data.nombre)}&rol=${data.rol}`;
+            }, 1500);
+        } else {
+            mensajeDiv.textContent = data.error;
+            mensajeDiv.className = 'error';
+        }
+    } catch (err) {
+        mensajeDiv.textContent = 'Error al conectar con servidor';
+        mensajeDiv.className = 'error';
+    }
+}
+</script>

@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f8; text-align: center; padding: 40px; }
+        h2 { color: #333; }
+        button { margin: 10px; padding: 12px 20px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h2 id="titulo">Dashboard</h2>
+    <div id="acciones"></div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const rol = parseInt(params.get('rol'));
+        const userId = params.get('id');
+        const accionesDiv = document.getElementById('acciones');
+        const titulo = document.getElementById('titulo');
+
+        if (rol === 1) {
+            titulo.textContent = 'Administrador';
+            accionesDiv.innerHTML = `<button onclick="alert('Crear')">Crear</button><button onclick="alert('Leer')">Leer</button><button onclick="alert('Actualizar')">Actualizar</button><button onclick="alert('Eliminar')">Eliminar</button>`;
+        } else if (rol === 2) {
+            titulo.textContent = 'Editor';
+            accionesDiv.innerHTML = `<button onclick="alert('Leer')">Leer</button><button onclick="alert('Actualizar')">Actualizar</button>`;
+        } else if (rol === 3) {
+            titulo.textContent = 'Usuario Básico';
+            accionesDiv.innerHTML = `<button onclick="alert('Leer')">Leer</button>`;
+        } else {
+            titulo.textContent = 'Rol desconocido';
+        }
+    </script>
+</body>
+</html>

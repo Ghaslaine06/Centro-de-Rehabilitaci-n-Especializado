@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar Paciente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      background-color: #28a745;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header img {
+      height: 50px;
+      margin-right: 1rem;
+      border-radius: 50%;
+    }
+
+    .header-text h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .header-text p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .message-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .message-box button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .header-text h1 {
+        font-size: 1.5rem;
+      }
+
+      .header-text p {
+        font-size: 0.8rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .form-input,
+      .form-textarea,
+      .form-select {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        padding: 0.7rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+
+  <!-- Encabezado -->
+  <header class="header">
+    <div class="flex items-center">
+      <img src="../img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
+      <div class="header-text">
+        <h1 class="text-white text-2xl md:text-3xl font-bold">Centro de Rehabilitación Especializado</h1>
+        <p class="text-white text-sm md:text-base opacity-90">Recuperando vidas, restaurando esperanza</p>
+      </div>
+    </div>
+    <button id="logoutBtn" class="btn btn-danger w-auto px-4 py-2 text-base md:text-lg">Cerrar Sesión</button>
+  </header>
+
+  <main class="container">
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box">
+      <p id="messageText"></p>
+      <button onclick="hideMessageBox()">OK</button>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <section id="registerPatientSection" class="card">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">Registrar Nuevo Paciente</h2>
+      <form id="patientRegistrationForm">
+        <div class="form-group">
+          <label for="NOMBRE_COMPLETO" class="form-label">Nombre Completo:</label>
+          <input type="text" id="NOMBRE_COMPLETO" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label for="IDENTIFICACION" class="form-label">Identificación:</label>
+          <input type="text" id="IDENTIFICACION" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label for="EDAD" class="form-label">Edad:</label>
+          <input type="number" id="EDAD" class="form-input" min="0" max="120" required />
+        </div>
+
+        <div class="form-group">
+          <label for="GENERO" class="form-label">Género:</label>
+          <select id="GENERO" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="O">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="DIRECCION" class="form-label">Dirección:</label>
+          <textarea id="DIRECCION" class="form-textarea" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="TELEFONO" class="form-label">Teléfono:</label>
+          <input type="tel" id="TELEFONO" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label for="ESTADO_CIVIL" class="form-label">Estado Civil:</label>
+          <select id="ESTADO_CIVIL" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="Soltero">Soltero</option>
+            <option value="Casado">Casado</option>
+            <option value="Divorciado">Divorciado</option>
+            <option value="Viudo">Viudo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="FECHA_INGRESO" class="form-label">Fecha de Ingreso:</label>
+          <input type="date" id="FECHA_INGRESO" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label for="TIPO_INGRESO" class="form-label">Tipo de Ingreso:</label>
+          <select id="TIPO_INGRESO" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Gratuito">Gratuito</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ADICCION_PRINCIPAL" class="form-label">Adicción Principal:</label>
+          <input type="text" id="ADICCION_PRINCIPAL" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label for="OBSERVACIONES" class="form-label">Observaciones:</label>
+          <textarea id="OBSERVACIONES" class="form-textarea"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">Guardar Registro</button>
+        <button type="button" id="backToDashboardBtn" class="btn btn-secondary mt-2">Volver al Menú</button>
+      </form>
+
+    </section>
+  </main>
+
+  <script>
+    function showMessageBox(message) {
+      const messageBox = document.getElementById('messageBox');
+      const messageText = document.getElementById('messageText');
+      messageText.textContent = message;
+      messageBox.style.display = 'block';
+    }
+
+    function hideMessageBox() {
+      document.getElementById('messageBox').style.display = 'none';
+    }
+
+    document.getElementById('patientRegistrationForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const patientData = {
+        NOMBRE_COMPLETO: document.getElementById('NOMBRE_COMPLETO').value.trim(),
+        IDENTIFICACION: document.getElementById('IDENTIFICACION').value.trim(),
+        EDAD: parseInt(document.getElementById('EDAD').value),
+        GENERO: document.getElementById('GENERO').value,
+        DIRECCION: document.getElementById('DIRECCION').value.trim(),
+        TELEFONO: document.getElementById('TELEFONO').value.trim(),
+        ESTADO_CIVIL: document.getElementById('ESTADO_CIVIL').value,
+        FECHA_INGRESO: document.getElementById('FECHA_INGRESO').value,
+        TIPO_INGRESO: document.getElementById('TIPO_INGRESO').value.trim(),
+        ADICCION_PRINCIPAL: document.getElementById('ADICCION_PRINCIPAL').value.trim(),
+        OBSERVACIONES: document.getElementById('OBSERVACIONES').value.trim()
+      };
+      console.log("Datos del paciente:", patientData);
+
+      fetch ('http://localhost:5000/pacientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(patientData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al registrar el paciente');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Respuesta del servidor:", data);
+        showMessageBox("¡Paciente registrado exitosamente!");
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        showMessageBox("Error al registrar el paciente");
+      });
+
+  
+    });
+
+    document.getElementById('backToDashboardBtn').addEventListener('click', () => {
+      window.location.href = 'menu.html';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
+
+  </script>
+</body>
+
+</html>
