@@ -1,390 +1,291 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes y Consultas</title>
-    <!-- Load Tailwind CSS for responsive design -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* A soft light background */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .header {
-            background-color: #28a745; /* Green for header */
-            color: white;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header img {
-            height: 50px; /* Logo size */
-            margin-right: 1rem;
-            border-radius: 50%; /* Circular logo */
-        }
-        .header-text h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        .header-text p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        .container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .card {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px; /* Max width for the sections */
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        .form-label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box; /* Include padding and border in width */
-        }
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.85rem;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary {
-            background-color: #28a745; /* Primary green */
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #218838; /* Darker green on hover */
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background-color: #6c757d; /* Secondary gray */
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268; /* Darker gray on hover */
-            transform: translateY(-2px);
-        }
-        .btn-danger {
-            background-color: #dc3545; /* Red for logout */
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #c82333; /* Darker red on hover */
-            transform: translateY(-2px);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultas y Gestión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            display: none; /* Hidden by default */
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        .message-box button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+    .header {
+      background-color: #28a745;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .report-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        .report-item {
-            background-color: #e6ffe6; /* Light green for report items */
-            padding: 1rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-        .report-item h3 {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #218838; /* Darker green */
-            margin-bottom: 0.5rem;
-        }
-        .report-item p {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #28a745;
-        }
+    .header img {
+      height: 50px;
+      margin-right: 1rem;
+      border-radius: 50%;
+    }
 
-        .query-results {
-            margin-top: 1.5rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            min-height: 100px;
-            background-color: #f9f9f9;
-            text-align: left;
-            overflow-x: auto; /* For wide content */
-        }
-        .query-results p {
-            margin-bottom: 0.5rem;
-        }
-        .query-results strong {
-            color: #28a745;
-        }
+    .header-text h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
 
-        /* Media queries for responsiveness */
-        @media (max-width: 768px) {
-            .header-text h1 {
-                font-size: 1.5rem;
-            }
-            .header-text p {
-                font-size: 0.8rem;
-            }
-            .card {
-                padding: 1.5rem;
-            }
-            .form-input, .form-textarea, .form-select {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-            .btn {
-                padding: 0.7rem;
-                font-size: 1rem;
-            }
-            .header .btn-danger { /* Adjust logout button in header for smaller screens */
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-            .report-grid {
-                grid-template-columns: 1fr; /* Stack items on small screens */
-            }
-        }
-    </style>
+    .container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .btn {
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 0.25rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    table th, table td {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #28a745;
+      color: white;
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
 
-    <!-- Page Header -->
-    <header class="header">
-        <div class="flex items-center">
-            <img src="img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
-            <div class="header-text">
-                <h1 class="text-white text-2xl md:text-3xl font-bold">Centro de Rehabilitación Especializado</h1>
-                <p class="text-white text-sm md:text-base opacity-90">Recuperando vidas, restaurando esperanza</p>
-            </div>
+<body>
+  <header class="header">
+    <div class="flex items-center">
+      <img src="../img/logo.jpg" alt="Logo Centro">
+      <div class="header-text">
+        <h1>Centro de Rehabilitación Especializado</h1>
+      </div>
+    </div>
+    <button id="logoutBtn" class="btn btn-danger">Cerrar Sesión</button>
+  </header>
+
+  <main class="container">
+    <div class="mb-4">
+      <button class="btn btn-primary" onclick="showSection('consultar')">Consultar Paciente</button>
+      <button class="btn btn-primary" onclick="showSection('editar')">Editar Paciente</button>
+      <button class="btn btn-primary" onclick="showSection('listado')">Lista Pacientes</button>
+      <button class="btn btn-primary" onclick="showSection('habitaciones')">Lista Habitaciones</button>
+    </div>
+
+    <!-- Consultar Paciente -->
+    <section id="consultar" class="card hidden">
+      <h2 class="text-xl font-bold mb-4">Consultar Paciente</h2>
+      <input type="text" id="consultaId" class="form-input mb-2" placeholder="Ingrese ID Paciente">
+      <button class="btn btn-primary" onclick="consultarPaciente()">Buscar</button>
+      <div id="consultaResultado" class="mt-4 text-left"></div>
+    </section>
+
+    <!-- Editar Paciente -->
+    <section id="editar" class="card hidden">
+      <h2 class="text-xl font-bold mb-4">Editar Paciente</h2>
+      <input type="text" id="editar_id" class="form-input mb-2" placeholder="Ingrese ID Paciente">
+      <button class="btn btn-primary" onclick="cargarPaciente()">Cargar Datos</button>
+      <form id="editarForm" class="mt-4 hidden">
+        <div class="form-group">
+          <input type="text" id="editar_nombre" class="form-input mb-2" placeholder="Nombre Completo">
+          <input type="text" id="editar_identificacion" class="form-input mb-2" placeholder="Identificación">
+          <input type="number" id="editar_edad" class="form-input mb-2" placeholder="Edad">
+          <input type="text" id="editar_genero" class="form-input mb-2" placeholder="Género">
+          <input type="text" id="editar_direccion" class="form-input mb-2" placeholder="Dirección">
+          <input type="text" id="editar_telefono" class="form-input mb-2" placeholder="Teléfono">
+          <input type="text" id="editar_estado_civil" class="form-input mb-2" placeholder="Estado Civil">
+          <input type="text" id="editar_tipo_ingreso" class="form-input mb-2" placeholder="Tipo de Ingreso">
+          <input type="text" id="editar_adiccion" class="form-input mb-2" placeholder="Adicción Principal">
+          <textarea id="editar_observaciones" class="form-input mb-2" placeholder="Observaciones"></textarea>
         </div>
-        <button id="logoutBtn" class="btn btn-danger w-auto px-4 py-2 text-base md:text-lg">Cerrar Sesión</button>
-    </header>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      </form>
+    </section>
 
-    <main class="container">
-        <!-- Custom message box container -->
-        <div id="messageBox" class="message-box">
-            <p id="messageText"></p>
-            <button onclick="hideMessageBox()">OK</button>
-        </div>
+    <!-- Lista Pacientes -->
+    <section id="listado" class="card hidden">
+      <h2 class="text-xl font-bold mb-4">Lista de Pacientes</h2>
+      <button class="btn btn-primary mb-2" onclick="cargarListaPacientes()">Cargar Lista</button>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Identificación</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPacientes"></tbody>
+      </table>
+    </section>
 
-        <!-- Reports Section -->
-        <section id="reportsSection" class="card">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Reportes Generales</h2>
-            <div class="report-grid">
-                <div class="report-item">
-                    <h3>Total de Pacientes</h3>
-                    <p id="totalPatients">25</p>
-                </div>
-                <div class="report-item">
-                    <h3>Habitaciones Ocupadas</h3>
-                    <p id="occupiedRooms">12</p>
-                </div>
-                <div class="report-item">
-                    <h3>Habitaciones Disponibles</h3>
-                    <p id="availableRooms">8</p>
-                </div>
-                <div class="report-item">
-                    <h3>Evaluaciones Realizadas</h3>
-                    <p id="evaluationsDone">30</p>
-                </div>
-            </div>
-        </section>
+    <!-- Lista Habitaciones -->
+    <section id="habitaciones" class="card hidden">
+      <h2 class="text-xl font-bold mb-4">Lista de Habitaciones</h2>
+      <button class="btn btn-primary mb-2" onclick="cargarListaHabitaciones()">Cargar Lista</button>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tablaHabitaciones"></tbody>
+      </table>
+    </section>
+   </main>
 
-        <!-- Query Section -->
-        <section id="querySection" class="card mt-6">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Consulta de Pacientes</h2>
-            <form id="patientQueryForm">
-                <div class="form-group flex flex-col md:flex-row gap-4 items-end">
-                    <div class="flex-grow">
-                        <label for="queryPatientId" class="form-label">Buscar por ID de Paciente:</label>
-                        <input type="text" id="queryPatientId" class="form-input" placeholder="Ej: P001">
-                    </div>
-                    <button type="submit" class="btn btn-primary md:w-auto md:px-6">Buscar</button>
-                </div>
-            </form>
-            <div id="queryResults" class="query-results hidden">
-                <!-- Results will be displayed here -->
-                <p class="text-gray-600">Resultados de la búsqueda:</p>
-                <div id="patientDetails"></div>
-            </div>
-            <p id="noResultsMessage" class="text-red-500 hidden mt-4">No se encontraron resultados para el ID de paciente.</p>
-        </section>
+  <!-- Botón Volver al Menú -->
+  <div class="text-center mb-6">
+    <button class="btn btn-primary" onclick="window.location.href='menu.html'">Volver al Menú</button>
+  </div>
 
-        <button type="button" id="backToDashboardBtn" class="btn btn-secondary mt-6 max-w-xs">Volver al Menù</button>
-    </main>
+  <script>
+    
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
 
-    <script>
-        // --- Utility Functions ---
-        function showMessageBox(message) {
-            const messageBox = document.getElementById('messageBox');
-            const messageText = document.getElementById('messageText');
-            messageText.textContent = message;
-            messageBox.style.display = 'block';
-        }
+    async function consultarPaciente() {
+      const id = consultaId.value;
+      const res = await fetch(`http://localhost:5000/pacientes/${id}`);
+      const data = await res.json();
+      consultaResultado.innerHTML = data.map(p => `
+        <p><b>Nombre:</b> ${p.NOMBRE_COMPLETO}</p>
+        <p><b>Edad:</b> ${p.EDAD}</p>
+        <p><b>Identificación:</b> ${p.IDENTIFICACION}</p>
+      `).join('');
+    }
 
-        function hideMessageBox() {
-            document.getElementById('messageBox').style.display = 'none';
-        }
+    async function cargarPaciente() {
+      const id = editar_id.value;
+      const res = await fetch(`http://localhost:5000/pacientes/${id}`);
+      const data = await res.json();
+      editar_nombre.value = data.nombre_completo;
+      editar_identificacion.value = data.identificacion;
+      editar_edad.value = data.edad;
+      editar_genero.value = data.genero;
+      editar_direccion.value = data.direccion;
+      editar_telefono.value = data.telefono;
+      editar_estado_civil.value = data.estado_civil;
+      editar_tipo_ingreso.value = data.tipo_ingreso;
+      editar_adiccion.value = data.adiccion_principal;
+      editar_observaciones.value = data.observaciones;
+      editarForm.classList.remove('hidden');
+    }
 
-        // --- Simulated Data (In a real app, this would come from your backend/database) ---
-        const patientsData = [
-            {
-                id: "P001",
-                nombre: "Juan Pérez García",
-                fechaNacimiento: "1985-03-15",
-                genero: "Masculino",
-                direccion: "Calle Falsa 123, Ciudad de México",
-                telefono: "55-1234-5678",
-                email: "juan.perez@example.com",
-                motivoConsulta: "Rehabilitación post-fractura de fémur.",
-                ultimaEvaluacion: "2024-06-20",
-                habitacionAsignada: "101A",
-                estadoHabitacion: "Ocupada"
-            },
-            {
-                id: "P002",
-                nombre: "María López Fernández",
-                fechaNacimiento: "1992-11-01",
-                genero: "Femenino",
-                direccion: "Avenida Siempre Viva 742, Guadalajara",
-                telefono: "33-9876-5432",
-                email: "maria.lopez@example.com",
-                motivoConsulta: "Terapia ocupacional por lesión de muñeca.",
-                ultimaEvaluacion: "2024-07-05",
-                habitacionAsignada: "203B",
-                estadoHabitacion: "Ocupada"
-            },
-            {
-                id: "P003",
-                nombre: "Carlos Sánchez Ruiz",
-                fechaNacimiento: "1970-07-22",
-                genero: "Masculino",
-                direccion: "Blvd. de los Sueños 50, Monterrey",
-                telefono: "81-1122-3344",
-                email: "carlos.sanchez@example.com",
-                motivoConsulta: "Rehabilitación cardíaca.",
-                ultimaEvaluacion: "2024-07-10",
-                habitacionAsignada: "305C",
-                estadoHabitacion: "Ocupada"
-            }
-        ];
+    editarForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = editar_id.value;
+      const data = {
+        nombre_completo: editar_nombre.value,
+        identificacion: editar_identificacion.value,
+        edad: editar_edad.value,
+        genero: editar_genero.value,
+        direccion: editar_direccion.value,
+        telefono: editar_telefono.value,
+        estado_civil: editar_estado_civil.value,
+        tipo_ingreso: editar_tipo_ingreso.value,
+        adiccion_principal: editar_adiccion.value,
+        observaciones: editar_observaciones.value
+      };
+      await fetch(`http://localhost:5000/pacientes/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      alert('Cambios guardados');
+    });
 
-        // --- Handle Patient Query Form ---
-        const patientQueryForm = document.getElementById('patientQueryForm');
-        const queryPatientIdInput = document.getElementById('queryPatientId');
-        const queryResultsDiv = document.getElementById('queryResults');
-        const patientDetailsDiv = document.getElementById('patientDetails');
-        const noResultsMessage = document.getElementById('noResultsMessage');
+    async function cargarListaPacientes() {
+      const res = await fetch('http://localhost:5000/pacientes');
+      const pacientes = await res.json();
+      tablaPacientes.innerHTML = pacientes.map(p =>
+        `<tr>
+          <td>${p.ID_PACIENTE}</td>
+          <td>${p.NOMBRE_COMPLETO}</td>
+          <td>${p.EDAD}</td>
+          <td>${p.IDENTIFICACION}</td>
+        </tr>`
+      ).join('');
+    }
 
-        patientQueryForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const patientId = queryPatientIdInput.value.trim().toUpperCase(); // Normalize input
+    async function cargarListaHabitaciones() {
+      const res = await fetch('http://localhost:5000/habitaciones');
+      const habitaciones = await res.json();
+      tablaHabitaciones.innerHTML = habitaciones.map(h =>
+        `<tr>
+          <td>${h.ID_HABITACION}</td>
+          <td>${h.NUMERO}</td>
+          <td>${h.TIPO}</td>
+          <td>${h.ESTADO}</td>
+        </tr>`
+      ).join('');
+    }
 
-            const foundPatient = patientsData.find(patient => patient.id === patientId);
-
-            queryResultsDiv.classList.add('hidden');
-            noResultsMessage.classList.add('hidden');
-            patientDetailsDiv.innerHTML = ''; // Clear previous results
-
-            if (foundPatient) {
-                let detailsHtml = `
-                    <p><strong>ID:</strong> ${foundPatient.id}</p>
-                    <p><strong>Nombre:</strong> ${foundPatient.nombre}</p>
-                    <p><strong>Fecha de Nacimiento:</strong> ${foundPatient.fechaNacimiento}</p>
-                    <p><strong>Género:</strong> ${foundPatient.genero}</p>
-                    <p><strong>Teléfono:</strong> ${foundPatient.telefono}</p>
-                    <p><strong>Email:</strong> ${foundPatient.email || 'N/A'}</p>
-                    <p><strong>Motivo de Consulta:</strong> ${foundPatient.motivoConsulta}</p>
-                    <p><strong>Última Evaluación:</strong> ${foundPatient.ultimaEvaluacion || 'N/A'}</p>
-                    <p><strong>Habitación Asignada:</strong> ${foundPatient.habitacionAsignada || 'N/A'}</p>
-                    <p><strong>Estado de Habitación:</strong> ${foundPatient.estadoHabitacion || 'N/A'}</p>
-                `;
-                patientDetailsDiv.innerHTML = detailsHtml;
-                queryResultsDiv.classList.remove('hidden');
-            } else {
-                noResultsMessage.classList.remove('hidden');
-            }
-        });
-
-        // --- Back to Dashboard Button ---
-        const backToDashboardBtn = document.getElementById('backToDashboardBtn');
-        backToDashboardBtn.addEventListener('click', () => {
-            window.location.href = 'menu.html'; // Redirect back to the dashboard (menu.html)
-        });
-
-        // --- Logout Button ---
-        const logoutBtn = document.getElementById('logoutBtn');
-        logoutBtn.addEventListener('click', () => {
-            // In a real application, you would also clear any session tokens here
-            // localStorage.removeItem('authToken');
-            window.location.href = 'index.html'; // Redirect back to the login page (index.html)
-        });
-    </script>
+    logoutBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
 </body>
-</html>

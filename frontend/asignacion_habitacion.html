@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asignación de Habitación</title>
-    <!-- Load Tailwind CSS for responsive design -->
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* A soft light background */
+            background-color: #f0f2f5;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
         .header {
-            background-color: #28a745; /* Green for header */
+            background-color: #28a745;
             color: white;
             padding: 1rem;
             display: flex;
@@ -28,9 +27,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header img {
-            height: 50px; /* Logo size */
+            height: 50px;
             margin-right: 1rem;
-            border-radius: 50%; /* Circular logo */
+            border-radius: 50%;
         }
         .header-text h1 {
             font-size: 1.8rem;
@@ -54,7 +53,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px; /* Max width for the form */
+            max-width: 700px;
             text-align: center;
             margin-bottom: 1.5rem;
         }
@@ -68,13 +67,13 @@
             margin-bottom: 0.5rem;
             color: #333;
         }
-        .form-input, .form-textarea, .form-select {
+        .form-input, .form-textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
-            box-sizing: border-box; /* Include padding and border in width */
+            box-sizing: border-box;
         }
         .form-textarea {
             min-height: 100px;
@@ -93,30 +92,29 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .btn-primary {
-            background-color: #28a745; /* Primary green */
+            background-color: #28a745;
             color: white;
         }
         .btn-primary:hover {
-            background-color: #218838; /* Darker green on hover */
+            background-color: #218838;
             transform: translateY(-2px);
         }
         .btn-secondary {
-            background-color: #6c757d; /* Secondary gray */
+            background-color: #6c757d;
             color: white;
         }
         .btn-secondary:hover {
-            background-color: #5a6268; /* Darker gray on hover */
+            background-color: #5a6268;
             transform: translateY(-2px);
         }
         .btn-danger {
-            background-color: #dc3545; /* Red for logout */
+            background-color: #dc3545;
             color: white;
         }
         .btn-danger:hover {
-            background-color: #c82333; /* Darker red on hover */
+            background-color: #c82333;
             transform: translateY(-2px);
         }
-
         .message-box {
             position: fixed;
             top: 50%;
@@ -127,7 +125,7 @@
             padding: 20px;
             border-radius: 10px;
             z-index: 1000;
-            display: none; /* Hidden by default */
+            display: none;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
@@ -140,8 +138,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-
-        /* Media queries for responsiveness */
         @media (max-width: 768px) {
             .header-text h1 {
                 font-size: 1.5rem;
@@ -152,7 +148,7 @@
             .card {
                 padding: 1.5rem;
             }
-            .form-input, .form-textarea, .form-select {
+            .form-input, .form-textarea {
                 padding: 0.6rem;
                 font-size: 0.9rem;
             }
@@ -160,7 +156,7 @@
                 padding: 0.7rem;
                 font-size: 1rem;
             }
-            .header .btn-danger { /* Adjust logout button in header for smaller screens */
+            .header .btn-danger {
                 padding: 0.5rem 1rem;
                 font-size: 0.9rem;
             }
@@ -168,11 +164,10 @@
     </style>
 </head>
 <body class="bg-gray-100">
-
-    <!-- Page Header -->
+    <!-- Header -->
     <header class="header">
         <div class="flex items-center">
-            <img src="img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
+            <img src="../img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
             <div class="header-text">
                 <h1 class="text-white text-2xl md:text-3xl font-bold">Centro de Rehabilitación Especializado</h1>
                 <p class="text-white text-sm md:text-base opacity-90">Recuperando vidas, restaurando esperanza</p>
@@ -182,81 +177,50 @@
     </header>
 
     <main class="container">
-        <!-- Custom message box container -->
+        <!-- Message Box -->
         <div id="messageBox" class="message-box">
             <p id="messageText"></p>
             <button onclick="hideMessageBox()">OK</button>
         </div>
 
-        <!-- Room Assignment Section -->
+        <!-- Room Assignment Card -->
         <section id="roomAssignmentSection" class="card">
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Asignación de Habitación</h2>
             <form id="roomAssignmentForm">
                 <div class="form-group">
-                    <label for="patientId" class="form-label">ID del Paciente:</label>
-                    <input type="text" id="patientId" class="form-input" placeholder="Ej: P001" required>
+                    <label for="ID_PACIENTE" class="form-label">ID del Paciente:</label>
+                    <input type="text" id="ID_PACIENTE" class="form-input" placeholder="Ej: P001" required>
                 </div>
-                <hr class="my-6 border-gray-300"> <!-- Separator for room details -->
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">Detalles de la Habitación a Asignar</h3>
+
+                <hr class="my-6 border-gray-300">
+
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Asignación Automática</h3>
                 <p class="text-sm text-gray-500 mb-4">
-                    <!-- Note for real application -->
-                    En una aplicación real, estos campos se seleccionarían de una lista de habitaciones disponibles en la base de datos.
+                    La habitación será asignada automáticamente según disponibilidad y límite por piso.
                 </p>
-                <div class="form-group">
-                    <label for="roomNumber" class="form-label">Número de Habitación:</label>
-                    <input type="text" id="roomNumber" class="form-input" placeholder="Ej: 101A" required>
-                </div>
-                <div class="form-group">
-                    <label for="roomType" class="form-label">Tipo de Habitación:</label>
-                    <select id="roomType" class="form-select" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Individual">Individual</option>
-                        <option value="Compartida">Compartida</option>
-                        <option value="Suite">Suite</option>
-                        <option value="Terapia Fisica">Terapia Física</option>
-                        <option value="Terapia Ocupacional">Terapia Ocupacional</option>
-                        <option value="Hidroterapia">Hidroterapia</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="roomCapacity" class="form-label">Capacidad:</label>
-                    <input type="number" id="roomCapacity" class="form-input" placeholder="Número de camas/personas" required min="1">
-                </div>
-                <div class="form-group">
-                    <label for="roomFloor" class="form-label">Piso:</label>
-                    <input type="number" id="roomFloor" class="form-input" placeholder="Número de piso" required min="1">
-                </div>
-                <div class="form-group">
-                    <label for="roomStatus" class="form-label">Estado:</label>
-                    <select id="roomStatus" class="form-select" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Disponible">Disponible</option>
-                        <option value="Ocupada">Ocupada</option>
-                        <option value="En Limpieza">En Limpieza</option>
-                        <option value="Mantenimiento">Mantenimiento</option>
-                    </select>
-                </div>
-                <hr class="my-6 border-gray-300"> <!-- Separator for dates -->
+
                 <div class="form-group">
                     <label for="admissionDate" class="form-label">Fecha de Ingreso:</label>
                     <input type="date" id="admissionDate" class="form-input" required>
                 </div>
+
                 <div class="form-group">
                     <label for="dischargeDate" class="form-label">Fecha Estimada de Alta:</label>
                     <input type="date" id="dischargeDate" class="form-input">
                 </div>
+
                 <div class="form-group">
                     <label for="notes" class="form-label">Notas Adicionales:</label>
                     <textarea id="notes" class="form-textarea" placeholder="Cualquier observación relevante sobre la asignación" rows="3"></textarea>
                 </div>
+
                 <button type="submit" class="btn btn-primary mt-4">Asignar Habitación</button>
-                <button type="button" id="backToDashboardBtn" class="btn btn-secondary mt-2">Volver al Menù</button>
+                <button type="button" id="backToDashboardBtn" class="btn btn-secondary mt-2">Volver al Menú</button>
             </form>
         </section>
     </main>
 
     <script>
-        // --- Utility Functions ---
         function showMessageBox(message) {
             const messageBox = document.getElementById('messageBox');
             const messageText = document.getElementById('messageText');
@@ -268,69 +232,48 @@
             document.getElementById('messageBox').style.display = 'none';
         }
 
-        // --- Handle Room Assignment Form ---
         const roomAssignmentForm = document.getElementById('roomAssignmentForm');
 
         roomAssignmentForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent default form submission
+            e.preventDefault();
 
-            // Collect form data
-            const assignmentData = {
-                patientId: document.getElementById('patientId').value,
-                // Room details based on SQL schema
-                roomNumber: document.getElementById('roomNumber').value,
-                roomType: document.getElementById('roomType').value,
-                roomCapacity: document.getElementById('roomCapacity').value,
-                roomFloor: document.getElementById('roomFloor').value,
-                roomStatus: document.getElementById('roomStatus').value,
-                // Dates and notes
+            const roomData = {
+                ID_PACIENTE: document.getElementById('ID_PACIENTE').value,
                 admissionDate: document.getElementById('admissionDate').value,
                 dischargeDate: document.getElementById('dischargeDate').value,
                 notes: document.getElementById('notes').value
             };
 
-            console.log("Room assignment data to save:", assignmentData);
-            showMessageBox("¡Habitación asignada exitosamente (simulado)! Los datos se muestran en la consola.");
-
-            // In a real application, you would send this data to your backend server.
-            // For example, using fetch():
-            /*
-            fetch('/api/assign-room', {
+            fetch('http://localhost:5000/asignar-habitacion', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('authToken') // If using authentication tokens
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(assignmentData)
+                body: JSON.stringify(roomData)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     showMessageBox("Habitación asignada exitosamente.");
-                    roomAssignmentForm.reset(); // Clear the form
+                    roomAssignmentForm.reset();
                 } else {
-                    showMessageBox("Error assigning room: " + data.message);
+                    showMessageBox(data.message);
                 }
             })
             .catch(error => {
                 console.error("Network error assigning room:", error);
-                showMessageBox("Connection error trying to assign room.");
+                showMessageBox("Error de conexión al intentar asignar la habitación.");
             });
-            */
         });
 
-         // --- Back to Dashboard Button ---
         const backToDashboardBtn = document.getElementById('backToDashboardBtn');
         backToDashboardBtn.addEventListener('click', () => {
-            window.location.href = 'menu.html'; // Redirect back to the dashboard (menu.html)
+            window.location.href = 'menu.html';
         });
 
-        // --- Logout Button ---
         const logoutBtn = document.getElementById('logoutBtn');
         logoutBtn.addEventListener('click', () => {
-            // In a real application, you would also clear any session tokens here
-            // localStorage.removeItem('authToken');
-            window.location.href = 'index.html'; // Redirect back to the login page (index.html)
+            window.location.href = 'index.html';
         });
     </script>
 </body>

@@ -28,15 +28,13 @@ app.post('/login', async (req, res) => {
     try {
         connection = await openConnection();
         const result = await connection.execute(
-            `SELECT * FROM usuario WHERE nombre = :nombre and contrasena = :contrasena`,
+            `SELECT * FROM usuario WHERE nombre = :nombre AND contrasena = :contrasena`,
             { nombre, contrasena },
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
-        if (result.rows.length === 0){
+        if (result.rows.length === 0) {
             return res.status(400).json({ error: 'Usuario no encontrado' });
-        }
-        else{
-
+        } else {
             res.json({ nombre: result.rows[0].NOMBRE, rol: result.rows[0].ID_ROL });
         }
     } catch (err) {
@@ -47,19 +45,28 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// REGISTRAR PACIENTE
+// REGISTRAR PACIENTE (CORREGIDO)
 app.post('/pacientes', async (req, res) => {
-   
-    const { NOMBRE_COMPLETO, IDENTIFICACION, EDAD, GENERO, DIRECCION, TELEFONO, ESTADO_CIVIL, FECHA_INGRESO, TIPO_INGRESO, ADICCION_PRINCIPAL,OBSERVACIONES} = req.body;
-    
-    
+    const {
+        NOMBRE_COMPLETO, IDENTIFICACION, EDAD, GENERO, DIRECCION,
+        TELEFONO, ESTADO_CIVIL, TIPO_INGRESO, ADICCION_PRINCIPAL, OBSERVACIONES
+    } = req.body;
+
     let connection;
     try {
         connection = await openConnection();
         await connection.execute(
-            `INSERT INTO paciente (NOMBRE_COMPLETO, identificacion, edad, genero, direccion, telefono, estado_civil, fecha_ingreso, tipo_ingreso, adiccion_principal, observaciones)
-             VALUES ( :NOMBRE_COMPLETO, :identificacion, :edad, :genero, :direccion, :telefono, :estado_civil, SYSDATE, :tipo_ingreso, :adiccion_principal, :observaciones)`,
-            { NOMBRE_COMPLETO, IDENTIFICACION, EDAD, GENERO, DIRECCION, TELEFONO, ESTADO_CIVIL, TIPO_INGRESO, ADICCION_PRINCIPAL, OBSERVACIONES },
+            `INSERT INTO paciente (
+                NOMBRE_COMPLETO, IDENTIFICACION, EDAD, GENERO, DIRECCION,
+                TELEFONO, ESTADO_CIVIL, FECHA_INGRESO, TIPO_INGRESO, ADICCION_PRINCIPAL, OBSERVACIONES
+            ) VALUES (
+                :NOMBRE_COMPLETO, :IDENTIFICACION, :EDAD, :GENERO, :DIRECCION,
+                :TELEFONO, :ESTADO_CIVIL, SYSDATE, :TIPO_INGRESO, :ADICCION_PRINCIPAL, :OBSERVACIONES
+            )`,
+            {
+                NOMBRE_COMPLETO, IDENTIFICACION, EDAD, GENERO, DIRECCION,
+                TELEFONO, ESTADO_CIVIL, TIPO_INGRESO, ADICCION_PRINCIPAL, OBSERVACIONES
+            },
             { autoCommit: true }
         );
         res.json({ message: 'Paciente registrado correctamente' });
@@ -73,36 +80,60 @@ app.post('/pacientes', async (req, res) => {
 
 // REGISTRAR EVALUACION Y ASIGNAR HABITACION
 app.post('/evaluaciones', async (req, res) => {
-    const { id_paciente, diagnostico, medicamentos, indicaciones, condicion_inicial } = req.body;
+    const { ID_PACIENTE, DIAGNOSTICO, MEDICAMENTOS, INDICACIONES, CONDICION_INICIAL } = req.body;
     let connection;
+
     try {
         connection = await openConnection();
-        await connection.execute(
-            `INSERT INTO evaluaciones (id_paciente, fecha_evaluacion, diagnostico, medicamentos, indicaciones, condicion_inicial)
-             VALUES (:id_paciente, SYSDATE, :diagnostico, :medicamentos, :indicaciones, :condicion_inicial)`,
-            { id_paciente, diagnostico, medicamentos, indicaciones, condicion_inicial },
-            { autoCommit: true }
+
+        // Verificar si el paciente ya tiene habitación
+        const checkResult = await connection.execute(
+            `SELECT * FROM HABITACION WHERE ID_PACIENTE = :ID_PACIENTE`,
+            { ID_PACIENTE },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
-        const result = await connection.execute(
-            `SELECT * FROM habitacion WHERE estado = 'LIBRE' FETCH FIRST 1 ROWS ONLY`,
+        if (checkResult.rows.length > 0) {
+            return res.status(400).json({
+                error: `El paciente con ID ${ID_PACIENTE} ya tiene asignada la habitación ${checkResult.rows[0].NUMERO}`
+            });
+        }
+
+        // Buscar habitación disponible con límite de 10 por piso (ejemplo)
+        const roomResult = await connection.execute(
+            `SELECT * FROM HABITACION 
+             WHERE ESTADO = 'Disponible' 
+             AND (SELECT COUNT(*) FROM HABITACION h2 WHERE h2.PISO = HABITACION.PISO AND h2.ESTADO = 'Ocupada') < 10
+             FETCH FIRST 1 ROWS ONLY`,
             [],
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
-        if (result.rows.length === 0) {
-            return res.json({ message: 'Evaluación registrada, pero no hay habitaciones libres' });
+        if (roomResult.rows.length === 0) {
+            return res.json({ message: 'No hay habitaciones disponibles con el límite por piso.' });
         }
 
-        const habitacion = result.rows[0];
+        const habitacion = roomResult.rows[0];
 
+        // Registrar evaluación médica
         await connection.execute(
-            `UPDATE habitacion SET estado = 'OCUPADO', id_paciente = :id_paciente, fecha_asignacion = SYSDATE WHERE id_habitacion = :id_habitacion`,
-            { id_paciente, id_habitacion: habitacion.ID_HABITACION },
+            `INSERT INTO EVALUACION_MEDICA (ID_PACIENTE, FECHA_EVALUACION, DIAGNOSTICO, MEDICAMENTOS, INDICACIONES, CONDICION_INICIAL)
+             VALUES (:ID_PACIENTE, SYSDATE, :DIAGNOSTICO, :MEDICAMENTOS, :INDICACIONES, :CONDICION_INICIAL)`,
+            { ID_PACIENTE, DIAGNOSTICO, MEDICAMENTOS, INDICACIONES, CONDICION_INICIAL },
             { autoCommit: true }
         );
 
-        res.json({ message: `Evaluación registrada y habitación ${habitacion.NUMERO} asignada` });
+        // Asignar habitación automáticamente
+        await connection.execute(
+            `UPDATE HABITACION 
+             SET ESTADO = 'Ocupada', ID_PACIENTE = :ID_PACIENTE, FECHA_ASIGNACION = SYSDATE 
+             WHERE ID_HABITACION = :ID_HABITACION`,
+            { ID_PACIENTE, ID_HABITACION: habitacion.ID_HABITACION },
+            { autoCommit: true }
+        );
+
+        res.json({ message: `Habitación ${habitacion.NUMERO} asignada automáticamente al paciente ${ID_PACIENTE}` });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error registrando evaluación o asignando habitación' });
@@ -111,22 +142,116 @@ app.post('/evaluaciones', async (req, res) => {
     }
 });
 
-app.get('/habitaciones', async (req, res) => {
+// NUEVA RUTA: ASIGNAR HABITACIÓN (para tu nuevo formulario)
+app.post('/asignar/habitacion', async (req, res) => {
+    const { patientId, admissionDate, dischargeDate, notes } = req.body;
     let connection;
+
+    try {
+        connection = await openConnection();
+
+        // Buscar habitación disponible
+        const roomResult = await connection.execute(
+            `SELECT * FROM HABITACION WHERE ESTADO = 'Disponible' FETCH FIRST 1 ROWS ONLY`,
+            [],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        if (roomResult.rows.length === 0) {
+            return res.json({ success: false, message: 'No hay habitaciones disponibles.' });
+        }
+
+        const habitacion = roomResult.rows[0];
+
+        // Asignar habitación
+        await connection.execute(
+            `UPDATE HABITACION
+             SET ESTADO = 'Ocupada', ID_PACIENTE = :ID_PACIENTE, FECHA_ASIGNACION = TO_DATE(:FECHA_INGRESO, 'YYYY-MM-DD')
+             WHERE ID_HABITACION = :ID_HABITACION`,
+            { ID_PACIENTE: patientId, FECHA_INGRESO: admissionDate, ID_HABITACION: habitacion.ID_HABITACION },
+            { autoCommit: true }
+        );
+
+        res.json({ success: true, message: `Habitación ${habitacion.NUMERO} asignada al paciente ${patientId}` });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error asignando habitación' });
+    } finally {
+        if (connection) await connection.close();
+    }
+});
+
+// habitaciones 
+app.get('/habitaciones',async (req, res) => {
+
+    let c;
+
+    try{
+
+        c = await openConnection();
+
+        const result = await c.execute(
+            `SELECT * FROM HABITACION`,
+            [],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+        res.json(result.rows);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al obtener habitaciones' });
+    } finally {
+        if (c) await c.close();
+    }
+});
+
+// pacientes 
+
+app.get('/pacientes', async (req, res) => {
+
+    let connection;
+
     try {
         connection = await openConnection();
         const result = await connection.execute(
-            `SELECT * FROM habitacion`,
+            `SELECT * FROM PACIENTE`,
             [],
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
         res.json(result.rows);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Error obteniendo habitaciones' });
+        res.status(500).json({ error: 'Error al obtener pacientes' });
     } finally {
         if (connection) await connection.close();
     }
 });
 
-app.listen(5000, () => console.log('Servidor Node.js corriendo en puerto 5000'));
+app.get('/pacientes/:id' , async (req, res) => {
+
+    let connection;
+    try {
+        connection = await openConnection();
+        const result = await connection.execute(
+            `SELECT * FROM PACIENTE WHERE ID_PACIENTE = :id`,
+            [req.params.id],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al obtener pacientes' });
+    } finally {
+        if (connection) await connection.close();
+    }
+});
+
+
+
+
+// Servidor en puerto 5000
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});

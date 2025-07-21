@@ -172,7 +172,7 @@
     <!-- Page Header -->
     <header class="header">
         <div class="flex items-center">
-            <img src="img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
+            <img src="../img/logo.jpg" alt="Logo Centro" class="rounded-full mr-4">
             <div class="header-text">
                 <h1 class="text-white text-2xl md:text-3xl font-bold">Centro de Rehabilitación Especializado</h1>
                 <p class="text-white text-sm md:text-base opacity-90">Recuperando vidas, restaurando esperanza</p>
@@ -193,28 +193,28 @@
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Evaluación Médica Inicial</h2>
             <form id="medicalEvaluationForm">
                 <div class="form-group">
-                    <label for="patientId" class="form-label">ID del Paciente:</label>
-                    <input type="text" id="patientId" class="form-input" placeholder="Ej: P001" required>
+                    <label for="ID_PACIENTE" class="form-label">ID del Paciente:</label>
+                    <input type="text" id="ID_PACIENTE" class="form-input" placeholder="Ej: P001" required>
                 </div>
                 <div class="form-group">
-                    <label for="evaluationDate" class="form-label">Fecha de Evaluación:</label>
-                    <input type="date" id="evaluationDate" class="form-input" required>
+                    <label for="FECHA_EVALUACION" class="form-label">Fecha de Evaluación:</label>
+                    <input type="date" id="FECHA_EVALUACION" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label for="mainSymptoms" class="form-label">Síntomas Principales:</label>
-                    <textarea id="mainSymptoms" class="form-textarea" placeholder="Describa los síntomas principales del paciente" rows="3" required></textarea>
+                    <label for="CONDICION_INICIAL" class="form-label">Síntomas Principales:</label>
+                    <textarea id="CONDICION_INICIAL" class="form-textarea" placeholder="Describa los síntomas principales del paciente" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="diagnosis" class="form-label">Diagnóstico Preliminar:</label>
-                    <textarea id="diagnosis" class="form-textarea" placeholder="Diagnóstico inicial del médico" rows="3" required></textarea>
+                    <label for="DIAGNOSTICO" class="form-label">Diagnóstico Preliminar:</label>
+                    <textarea id="DIAGNOSTICO" class="form-textarea" placeholder="Diagnóstico inicial del médico" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="treatmentPlan" class="form-label">Plan de Tratamiento Sugerido:</label>
-                    <textarea id="treatmentPlan" class="form-textarea" placeholder="Detalles del plan de tratamiento inicial" rows="4" required></textarea>
+                    <label for="MEDICAMENTOS" class="form-label">Plan de Tratamiento Sugerido:</label>
+                    <textarea id="MEDICAMENTOS" class="form-textarea" placeholder="Detalles del plan de tratamiento inicial" rows="4" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="notes" class="form-label">Notas Adicionales:</label>
-                    <textarea id="notes" class="form-textarea" placeholder="Cualquier otra observación relevante" rows="3"></textarea>
+                    <label for="INDICACIONES" class="form-label">Notas Adicionales:</label>
+                    <textarea id="INDICACIONES" class="form-textarea" placeholder="Cualquier otra observación relevante" rows="3"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary mt-4">Guardar Evaluación</button>
                 <button type="button" id="backToDashboardBtn" class="btn btn-secondary mt-2">Volver al Menù</button>
@@ -235,33 +235,25 @@
             document.getElementById('messageBox').style.display = 'none';
         }
 
-        // --- Handle Medical Evaluation Form ---
         const medicalEvaluationForm = document.getElementById('medicalEvaluationForm');
 
         medicalEvaluationForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent default form submission
+            e.preventDefault(); 
 
-            // Collect form data
             const evaluationData = {
-                patientId: document.getElementById('patientId').value,
-                evaluationDate: document.getElementById('evaluationDate').value,
-                mainSymptoms: document.getElementById('mainSymptoms').value,
-                diagnosis: document.getElementById('diagnosis').value,
-                treatmentPlan: document.getElementById('treatmentPlan').value,
-                notes: document.getElementById('notes').value
+                ID_PACIENTE: document.getElementById('ID_PACIENTE').value,
+                FECHA_EVALUACION: document.getElementById('FECHA_EVALUACION').value,
+                DIAGNOSTICO: document.getElementById('DIAGNOSTICO').value,
+                CONDICION_INICIAL: document.getElementById('CONDICION_INICIAL').value,
+                MEDICAMENTOS: document.getElementById('MEDICAMENTOS').value,
+                INDICACIONES: document.getElementById('INDICACIONES').value
             };
 
-            console.log("Medical evaluation data to save:", evaluationData);
-            showMessageBox("¡Evaluación médica guardada exitosamente (simulada)! Los datos se muestran en la consola.");
 
-            // In a real application, you would send this data to your backend server.
-            // For example, using fetch():
-            /*
-            fetch('/api/save-medical-evaluation', {
+            fetch('http://localhost:5000/evaluaciones', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('authToken') // If using authentication tokens
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(evaluationData)
             })
@@ -269,29 +261,27 @@
             .then(data => {
                 if (data.success) {
                     showMessageBox("Evaluación médica guardada exitosamente.");
-                    medicalEvaluationForm.reset(); // Clear the form
+                    medicalEvaluationForm.reset(); 
                 } else {
-                    showMessageBox("Error saving medical evaluation: " + data.message);
+                    showMessageBox(data.message);
                 }
             })
             .catch(error => {
                 console.error("Network error saving medical evaluation:", error);
                 showMessageBox("Connection error trying to save medical evaluation.");
             });
-            */
+            
         });
 
          // --- Back to Dashboard Button ---
         const backToDashboardBtn = document.getElementById('backToDashboardBtn');
         backToDashboardBtn.addEventListener('click', () => {
-            window.location.href = 'menu.html'; // Redirect back to the dashboard (menu.html)
+            window.location.href = 'menu.html';
         });
 
         // --- Logout Button ---
         const logoutBtn = document.getElementById('logoutBtn');
         logoutBtn.addEventListener('click', () => {
-            // In a real application, you would also clear any session tokens here
-            // localStorage.removeItem('authToken');
             window.location.href = 'index.html'; // Redirect back to the login page (index.html)
         });
     </script>
