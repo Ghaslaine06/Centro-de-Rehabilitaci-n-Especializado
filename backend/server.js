@@ -248,6 +248,51 @@ app.get('/pacientes/:id' , async (req, res) => {
 });
 
 
+app.put('/pacientes/:id' , async (req, res) => {
+
+    let connection;
+    try {
+        connection = await openConnection();
+        const result = await connection.execute(
+            `UPDATE PACIENTE SET 
+                NOMBRE_COMPLETO = :NOMBRE_COMPLETO, 
+                IDENTIFICACION = :IDENTIFICACION, 
+                EDAD = :EDAD, 
+                GENERO = :GENERO, 
+                DIRECCION = :DIRECCION, 
+                TELEFONO = :TELEFONO, 
+                ESTADO_CIVIL = :ESTADO_CIVIL, 
+                TIPO_INGRESO = :TIPO_INGRESO, 
+                ADICCION_PRINCIPAL = :ADICCION_PRINCIPAL, 
+                OBSERVACIONES = :OBSERVACIONES
+             WHERE ID_PACIENTE = :ID_PACIENTE`,
+            {
+                NOMBRE_COMPLETO: req.body.NOMBRE_COMPLETO,
+                IDENTIFICACION: req.body.IDENTIFICACION,
+                EDAD: req.body.EDAD,
+                GENERO: req.body.GENERO,
+                DIRECCION: req.body.DIRECCION,
+                TELEFONO: req.body.TELEFONO,
+                ESTADO_CIVIL: req.body.ESTADO_CIVIL,
+                TIPO_INGRESO: req.body.TIPO_INGRESO,
+                ADICCION_PRINCIPAL: req.body.ADICCION_PRINCIPAL,
+                OBSERVACIONES: req.body.OBSERVACIONES,
+                ID_PACIENTE: req.params.id
+            },
+            { autoCommit: true }
+        );
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({ error: 'Paciente no encontrado' });
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al actualizar paciente' });
+    } finally {
+        if (connection) await connection.close();
+    }
+});
+
 
 
 // Servidor en puerto 5000
